@@ -1,6 +1,8 @@
 package com.mindex.challenge.service.impl;
 
+import com.mindex.challenge.dao.CompensationRepository;
 import com.mindex.challenge.dao.EmployeeRepository;
+import com.mindex.challenge.data.Compensation;
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.data.ReportingStructure;
 import com.mindex.challenge.service.EmployeeService;
@@ -20,12 +22,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private static final Logger LOG = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final EmployeeRepository employeeRepository;
+    private final CompensationRepository compensationRepository;
 
     @Value("${max.worker.threads}")
     private int maxWorkerThreads;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, CompensationRepository compensationRepository) {
         this.employeeRepository = employeeRepository;
+        this.compensationRepository = compensationRepository;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee read(String id) {
-        LOG.debug("Creating employee with id [{}]", id);
+        LOG.debug("Retrieving employee with id [{}]", id);
 
         Employee employee = employeeRepository.findByEmployeeId(id);
 
@@ -56,6 +60,29 @@ public class EmployeeServiceImpl implements EmployeeService {
         LOG.debug("Updating employee [{}]", employee);
 
         return employeeRepository.save(employee);
+    }
+
+    @Override
+    public Compensation createCompensation(Compensation compensation) {
+        LOG.debug("Creating compensation [{}]", compensation);
+        compensationRepository.save(compensation);
+        return compensation;
+    }
+
+    @Override
+    public Compensation readCompensation(String employeeId) {
+        LOG.debug("Retrieving compensation with id [{}]", employeeId);
+        Compensation compensation = compensationRepository.findByEmployeeId(employeeId);
+        if (compensation == null) {
+            throw new RuntimeException("Invalid compensationId: " + employeeId);
+        }
+        return compensation;
+    }
+
+    @Override
+    public Compensation updateCompensation(Compensation compensation) {
+        LOG.debug("Updating compensation [{}]", compensation);
+        return compensationRepository.save(compensation);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.mindex.challenge.service.impl;
 
 import com.mindex.challenge.data.Employee;
+import com.mindex.challenge.data.ReportingStructure;
 import com.mindex.challenge.service.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -82,5 +85,11 @@ public class EmployeeServiceImplTest {
         assertEquals(expected.getLastName(), actual.getLastName());
         assertEquals(expected.getDepartment(), actual.getDepartment());
         assertEquals(expected.getPosition(), actual.getPosition());
+    }
+
+    @Test
+    public void testReportStructureSize(){
+        ReportingStructure testStructure = restTemplate.getForEntity(employeeUrl + "/reportingStructure/" + "16a596ae-edd3-4847-99fe-c4518e82c86f", ReportingStructure.class ).getBody();
+        assertEquals(testStructure.getNumberOfReports(), 4);
     }
 }
