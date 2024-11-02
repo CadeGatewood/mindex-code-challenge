@@ -1,6 +1,7 @@
 package com.mindex.challenge.service.impl;
 
 import com.mindex.challenge.data.Employee;
+import com.mindex.challenge.data.ErrorResponse;
 import com.mindex.challenge.data.ReportingStructure;
 import com.mindex.challenge.service.EmployeeService;
 import org.junit.Before;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
@@ -90,6 +88,20 @@ public class EmployeeServiceImplTest {
     @Test
     public void testReportStructureSize(){
         ReportingStructure testStructure = restTemplate.getForEntity(employeeUrl + "/reportingStructure/" + "16a596ae-edd3-4847-99fe-c4518e82c86f", ReportingStructure.class ).getBody();
-        assertEquals(testStructure.getNumberOfReports(), 4);
+        assertEquals("John", testStructure.getEmployee().getFirstName());
+        assertEquals( 4, testStructure.getNumberOfReports());
+    }
+
+    @Test
+    public void testReportStructureEmpty(){
+        ReportingStructure testStructure = restTemplate.getForEntity(employeeUrl + "/reportingStructure/" + "b7839309-3348-463b-a7e3-5de1c168beb3", ReportingStructure.class ).getBody();
+        assertEquals("Paul", testStructure.getEmployee().getFirstName());
+        assertEquals( 0, testStructure.getNumberOfReports());
+    }
+
+    @Test
+    public void testReportStructureException(){
+        ResponseEntity<ErrorResponse> testEntity = restTemplate.getForEntity(employeeUrl + "/reportingStructure/" + "bad data", ErrorResponse.class );
+        assertEquals(HttpStatus.I_AM_A_TEAPOT, testEntity.getStatusCode());
     }
 }
